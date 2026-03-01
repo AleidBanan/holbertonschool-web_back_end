@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""This module provides hypermedia pagination functionality for a CSV dataset of popular baby names."""
+"""This module implements simple and hypermedia pagination."""
 
 import csv
 import math
@@ -9,24 +9,25 @@ index_range = __import__('0-simple_helper_function').index_range
 
 
 class Server:
-    """Server class that provides pagination and hypermedia pagination for a dataset."""
+    """Server class used to paginate a dataset of popular baby names."""
     DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self) -> None:
-        """Initialize the Server instance and prepare the dataset cache."""
+        """Initialize the server with an empty dataset cache."""
         self.__dataset: Optional[List[List]] = None
 
     def dataset(self) -> List[List]:
-        """Load and cache the dataset from the CSV file if it is not already loaded."""
+        """Return the cached dataset loaded from the CSV file."""
         if self.__dataset is None:
             with open(self.DATA_FILE) as f:
                 reader = csv.reader(f)
                 dataset = [row for row in reader]
             self.__dataset = dataset[1:]
+
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        """Return a specific page of the dataset based on the page number and page size."""
+        """Return a page of the dataset based on page number and page size."""
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
 
@@ -34,7 +35,7 @@ class Server:
         return self.dataset()[start:end]
 
     def get_hyper(self, page: int = 1, page_size: int = 10) -> Dict[str, object]:
-        """Return a dictionary containing hypermedia pagination metadata and page data."""
+        """Return pagination metadata and page data as a dictionary."""
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
 
