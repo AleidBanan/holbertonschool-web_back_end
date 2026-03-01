@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""This module implements simple and hypermedia pagination for a CSV dataset."""
+"""This module implements simple and hypermedia pagination."""
 
 import csv
 import math
@@ -14,9 +14,9 @@ class Server:
 
     def __init__(self) -> None:
         """Initialize the server with an empty dataset cache."""
-        self.__dataset: Optional[List[List[str]]] = None
+        self.__dataset: Optional[List[List]] = None
 
-    def dataset(self) -> List[List[str]]:
+    def dataset(self) -> List[List]:
         """Return the cached dataset loaded from the CSV file."""
         if self.__dataset is None:
             with open(self.DATA_FILE, newline="") as f:
@@ -26,7 +26,7 @@ class Server:
         return self.__dataset
 
     def get_page(self, page: int = 1,
-                 page_size: int = 10) -> List[List[str]]:
+                 page_size: int = 10) -> List[List]:
         """Return a page of the dataset based on page number and page size."""
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
@@ -36,7 +36,7 @@ class Server:
 
     def get_hyper(self, page: int = 1,
                   page_size: int = 10) -> Dict[str, object]:
-        """Return pagination metadata and the current page data as a dictionary."""
+        """Return pagination metadata and page data as a dictionary."""
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
 
@@ -46,7 +46,9 @@ class Server:
         total_pages = math.ceil(total_items / page_size)
 
         prev_page: Optional[int] = page - 1 if page > 1 else None
-        next_page: Optional[int] = page + 1 if page < total_pages else None
+        next_page: Optional[int] = (
+            page + 1 if page < total_pages else None
+        )
 
         return {
             "page_size": len(data),
