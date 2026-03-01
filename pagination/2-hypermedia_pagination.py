@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Module that implements hypermedia pagination for a CSV dataset."""
+"""This module implements simple and hypermedia pagination for a CSV dataset."""
 
 import csv
 import math
@@ -27,7 +27,7 @@ class Server:
 
     def get_page(self, page: int = 1,
                  page_size: int = 10) -> List[List[str]]:
-        """Return a page of the dataset based on page and page size."""
+        """Return a page of the dataset based on page number and page size."""
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
 
@@ -36,7 +36,7 @@ class Server:
 
     def get_hyper(self, page: int = 1,
                   page_size: int = 10) -> Dict[str, object]:
-        """Return pagination metadata and page data in dictionary form."""
+        """Return pagination metadata and the current page data as a dictionary."""
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
 
