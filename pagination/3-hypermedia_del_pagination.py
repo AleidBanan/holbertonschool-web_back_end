@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """
 Deletion-resilient hypermedia pagination.
-
-This module provides a Server class that paginates a dataset while remaining
-consistent even if rows are deleted between requests.
 """
 
 import csv
@@ -29,20 +26,19 @@ class Server:
         return self.__dataset
 
     def indexed_dataset(self) -> Dict[int, List]:
-        """Return a dataset indexed by original sorting position, starting at 0."""
+        """Return the dataset indexed by original sorting position."""
         if self.__indexed_dataset is None:
             dataset = self.dataset()
-            self.__indexed_dataset = {i: dataset[i] for i in range(len(dataset))}
+            self.__indexed_dataset = {
+                i: dataset[i] for i in range(len(dataset))
+            }
         return self.__indexed_dataset
 
     def get_hyper_index(
         self, index: Optional[int] = None, page_size: int = 10
-    ) -> Dict:
+    ) -> Dict[str, object]:
         """
-        Return deletion-resilient pagination data starting from a given index.
-
-        The returned dictionary contains the current index, the next index to
-        query, the page size, and the actual data rows.
+        Return deletion-resilient pagination data starting from index.
         """
         if index is None:
             index = 0
@@ -51,12 +47,13 @@ class Server:
         assert isinstance(page_size, int) and page_size > 0
 
         indexed = self.indexed_dataset()
-        assert index < len(self.dataset())
+        assert index in indexed
 
         data: List[List] = []
         current = index
+        max_index = max(indexed.keys())
 
-        while len(data) < page_size and current < len(self.dataset()):
+        while len(data) < page_size and current <= max_index:
             if current in indexed:
                 data.append(indexed[current])
             current += 1
