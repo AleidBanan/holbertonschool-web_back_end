@@ -1,10 +1,10 @@
-k#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
-Deletion-resilient hypermedia pagination.
+Deletion-resilient hypermedia pagination
 """
 
 import csv
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 
 class Server:
@@ -13,8 +13,8 @@ class Server:
 
     def __init__(self) -> None:
         """Initialize the server with empty dataset caches."""
-        self.__dataset: Optional[List[List]] = None
-        self.__indexed_dataset: Optional[Dict[int, List]] = None
+        self.__dataset = None
+        self.__indexed_dataset = None
 
     def dataset(self) -> List[List]:
         """Return the cached dataset loaded from the CSV file."""
@@ -26,35 +26,31 @@ class Server:
         return self.__dataset
 
     def indexed_dataset(self) -> Dict[int, List]:
-        """Return the dataset indexed by original sorting position, starting at 0."""
+        """Return the dataset indexed by original sorting position."""
         if self.__indexed_dataset is None:
             dataset = self.dataset()
-            self.__indexed_dataset = {i: dataset[i] for i in range(len(dataset))}
+            self.__indexed_dataset = {
+                i: dataset[i] for i in range(len(dataset))
+            }
         return self.__indexed_dataset
 
     def get_hyper_index(
-        self, index: Optional[int] = None, page_size: int = 10
-    ) -> Dict[str, object]:
-        """
-        Return deletion-resilient pagination data starting from the given index.
-
-        The returned dictionary includes the start index, the next index to query,
-        the page size of the returned data, and the page data itself.
-        """
+        self, index: int = None, page_size: int = 10
+    ) -> Dict:
+        """Return deletion-resilient pagination data starting from index."""
         if index is None:
             index = 0
 
         assert isinstance(index, int) and index >= 0
         assert isinstance(page_size, int) and page_size > 0
-        assert index < len(self.dataset())
 
         indexed = self.indexed_dataset()
-        data: List[List] = []
+        assert index < len(self.dataset())
+
+        data = []
         current = index
 
-        max_index = max(indexed.keys())
-
-        while len(data) < page_size and current <= max_index:
+        while len(data) < page_size and current < len(self.dataset()):
             if current in indexed:
                 data.append(indexed[current])
             current += 1
