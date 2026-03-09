@@ -1,0 +1,16 @@
+{
+  "name": "ES6_basic",
+  "version": "1.0.0",
+  "description": "ES6 basic tasks",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --experimental-modules"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.0",
+    "@babel/preset-env": "^7.22.0",
+    "babel-jest": "^29.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0"
+  }
+}
