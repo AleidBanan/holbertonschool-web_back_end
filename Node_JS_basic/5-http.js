@@ -42,12 +42,17 @@ function countStudents(path) {
 }
 
 const app = http.createServer((req, res) => {
+  const path = req.url.split('?')[0];
+
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
 
-  if (req.url === '/') {
+  if (path === '/') {
     res.end('Hello Holberton School!');
-  } else if (req.url === '/students') {
+    return;
+  }
+
+  if (path === '/students') {
     countStudents(database)
       .then((data) => {
         res.end(`This is the list of our students\n${data}`);
@@ -55,9 +60,10 @@ const app = http.createServer((req, res) => {
       .catch((error) => {
         res.end(`This is the list of our students\n${error.message}`);
       });
-  } else {
-    res.end('Hello Holberton School!');
+    return;
   }
+
+  res.end('Hello Holberton School!');
 });
 
 app.listen(1245);
