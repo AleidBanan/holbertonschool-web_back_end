@@ -11,49 +11,49 @@ function countStudents(path) {
         return;
       }
 
-      const lines = data.split('\n').filter((line) => line.trim() !== '');
-      const students = lines.slice(1);
+      const rows = data
+        .toString()
+        .split('\n')
+        .filter((line) => line.trim() !== '');
 
-      const result = [`Number of students: ${students.length}`];
-      const fields = {};
+      const students = rows.slice(1);
+      const groups = {};
+      const output = [`Number of students: ${students.length}`];
 
-      students.forEach((line) => {
-        const [firstName, , , field] = line.split(',').map((item) => item.trim());
+      students.forEach((student) => {
+        const [firstName, , , field] = student.split(',').map((item) => item.trim());
 
-        if (!fields[field]) {
-          fields[field] = [];
+        if (!groups[field]) {
+          groups[field] = [];
         }
-
-        fields[field].push(firstName);
+        groups[field].push(firstName);
       });
 
-      Object.keys(fields).forEach((field) => {
-        result.push(
-          `Number of students in ${field}: ${fields[field].length}. List: ${fields[field].join(', ')}`
+      Object.keys(groups).forEach((field) => {
+        output.push(
+          `Number of students in ${field}: ${groups[field].length}. List: ${groups[field].join(', ')}`
         );
       });
 
-      resolve(result.join('\n'));
+      resolve(output.join('\n'));
     });
   });
 }
 
 const app = http.createServer((req, res) => {
+  res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
 
-  if (req.url === '/') {
-    res.end('Hello Holberton School!');
-  } else if (req.url === '/students') {
+  if (req.url === '/students') {
     countStudents(database)
       .then((data) => {
         res.end(`This is the list of our students\n${data}`);
       })
-      .catch(() => {
-        res.end('This is the list of our students\nCannot load the database');
+      .catch((error) => {
+        res.end(`This is the list of our students\n${error.message}`);
       });
   } else {
-    res.statusCode = 404;
-    res.end('Not found');
+    res.end('Hello Holberton School!');
   }
 });
 
