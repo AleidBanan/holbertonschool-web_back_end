@@ -15,7 +15,6 @@ function countStudents(path) {
       const students = lines.slice(1);
 
       const result = [`Number of students: ${students.length}`];
-
       const fields = {};
 
       students.forEach((line) => {
@@ -24,6 +23,7 @@ function countStudents(path) {
         if (!fields[field]) {
           fields[field] = [];
         }
+
         fields[field].push(firstName);
       });
 
@@ -44,14 +44,12 @@ const app = http.createServer((req, res) => {
   if (req.url === '/') {
     res.end('Hello Holberton School!');
   } else if (req.url === '/students') {
-    res.write('This is the list of our students\n');
-
     countStudents(database)
       .then((data) => {
-        res.end(data);
+        res.end(`This is the list of our students\n${data}`);
       })
       .catch(() => {
-        res.end('Cannot load the database');
+        res.end('This is the list of our students\nCannot load the database');
       });
   } else {
     res.statusCode = 404;
