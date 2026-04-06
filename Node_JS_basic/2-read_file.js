@@ -9,30 +9,25 @@ function countStudents(path) {
     throw new Error('Cannot load the database');
   }
 
-  const lines = data
-    .split('\n')
-    .filter((line) => line.trim() !== '');
-
-  const students = lines.slice(1);
+  const rows = data.toString().split('\n').filter((line) => line.trim() !== '');
+  const students = rows.slice(1);
 
   console.log(`Number of students: ${students.length}`);
 
-  const fields = {};
+  const groups = {};
 
-  students.forEach((line) => {
-    const [firstName, , , field] = line.split(',').map((item) => item.trim());
+  students.forEach((student) => {
+    const [firstName, , , field] = student.split(',').map((item) => item.trim());
 
-    if (!fields[field]) {
-      fields[field] = [];
+    if (!groups[field]) {
+      groups[field] = [];
     }
 
-    fields[field].push(firstName);
+    groups[field].push(firstName);
   });
 
-  Object.keys(fields).forEach((field) => {
-    console.log(
-      `Number of students in ${field}: ${fields[field].length}. List: ${fields[field].join(', ')}`
-    );
+  Object.keys(groups).forEach((field) => {
+    console.log(`Number of students in ${field}: ${groups[field].length}. List: ${groups[field].join(', ')}`);
   });
 }
 
