@@ -1,73 +1,51 @@
 const http = require('http');
 const fs = require('fs');
+const countStudents = require('./3-read_file_async');
 
 const database = process.argv[2];
 
-function countStudents(path) {
-  return new Promise((resolve, reject) => {
-    if (!path) {
-      reject(new Error('Cannot load the database'));
-      return;
-    }
-
-    fs.readFile(path, 'utf8', (err, data) => {
-      if (err) {
-        reject(new Error('Cannot load the database'));
-        return;
-      }
-
-      const rows = data
-        .toString()
-        .split('\n')
-        .filter((line) => line.trim() !== '');
-
-      const students = rows.slice(1);
-      const groups = {};
-      const output = [`Number of students: ${students.length}`];
-
-      students.forEach((student) => {
-        const [firstName, , , field] = student.split(',').map((item) => item.trim());
-
-        if (!groups[field]) {
-          groups[field] = [];
-        }
-        groups[field].push(firstName);
-      });
-
-      Object.keys(groups).forEach((field) => {
-        output.push(
-          `Number of students in ${field}: ${groups[field].length}. List: ${groups[field].join(', ')}`
-        );
-      });
-
-      resolve(output.join('\n'));
-    });
-  });
-}
-
 const app = http.createServer((req, res) => {
-  const path = req.url.split('?')[0];
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
 
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
+  if (req.url === '/students') {
+    let output = 'This is the list of our students\n';
 
-  if (path === '/') {
-    res.end('Hello Holberton School!');
-    return;
-  }
-
-  if (path === '/students') {
     countStudents(database)
-      .then((data) => {
-        res.end(`This is the list of our students\n${data}`);
-      })
-      .catch((error) => {
-        res.end(`This is the list of our students\n${error.message}`);
-      });
-    return;
-  }
+      .then(() => {
+        const lines = fs.readFileSync(database, 'utf8')
+          .split('\n')
+          .filter((line) => line.trim() !== '')
+          .slice(1);
 
-  res.end('Hello Holberton School!');
+        const fields = {};
+
+        for (const line of lines) {
+          const [firstName, , , field] = line.split(',').map((item) => item.trim());
+
+          if (!fields[field]) {
+            fields[field] = [];
+          }
+
+          fields[field].push(firstName);
+        }
+
+        output += `Number of students: ${lines.length}\n`;
+
+        Object.keys(fields).forEach((field, index, array) => {
+          output += `Number of students in ${field}: ${fields[field].length}. List: ${fields[field].join(', ')}`;
+          if (index < array.length - 1) {
+            output += '\n';
+          }
+        });
+
+        res.end(output);
+      })
+      .catch((err) => {
+        res.end(`This is the list of our students\n${err.message}`);
+      });
+  } else {
+    res.end('Hello Holberton School!');
+  }
 });
 
 app.listen(1245);
