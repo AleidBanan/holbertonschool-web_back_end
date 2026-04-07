@@ -9,7 +9,7 @@ export default class StudentsController {
         const response = ['This is the list of our students'];
 
         Object.keys(fields)
-          .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+          .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
           .forEach((field) => {
             response.push(
               `Number of students in ${field}: ${fields[field].length}. List: ${fields[field].join(', ')}`
