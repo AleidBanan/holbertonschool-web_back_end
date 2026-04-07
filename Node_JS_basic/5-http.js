@@ -5,6 +5,11 @@ const database = process.argv[2];
 
 function countStudents(path) {
   return new Promise((resolve, reject) => {
+    if (!path) {
+      reject(new Error('Cannot load the database'));
+      return;
+    }
+
     fs.readFile(path, 'utf8', (err, data) => {
       if (err) {
         reject(new Error('Cannot load the database'));
@@ -26,7 +31,6 @@ function countStudents(path) {
         if (!groups[field]) {
           groups[field] = [];
         }
-
         groups[field].push(firstName);
       });
 
